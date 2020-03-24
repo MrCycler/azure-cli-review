@@ -1,0 +1,25 @@
+{
+    "name": "config-app",
+    "type": "Extensions",
+    "location": "[resourceGroup().location]",
+    "apiVersion": "2019-03-01",
+    "dependsOn": [
+      "[concat('Microsoft.Compute/virtualMachines/', concat(variables('vmName'),copyindex()))]"
+    ],
+    "tags": {
+      "displayName": "config-app"
+    },
+    "properties": {
+      "publisher": "Microsoft.Azure.Extensions",
+      "type": "CustomScript",
+      "typeHandlerVersion": "2.1",
+      "autoUpgradeMinorVersion": true,
+      "settings": {
+        "skipDos2Unix":false,
+        "timestamp":123456789          
+      },
+      "protectedSettings": {
+         "commandToExecute": "apt-get -y update && apt-get upgrade && apt-get install -y apache2"
+      }
+    }
+  }
