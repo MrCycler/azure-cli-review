@@ -18,4 +18,21 @@
 ```az group create --name groupname --location eastus```
 ## 2) Crear una ip publica
 ```az network public-ip create --g groupname --name myPublicIP```
-
+## 3) Crear un balanceador de cargas
+```az network lb create -g groupname -n loadbalancername --frontend-ip-name myFrontEndPool --backend-pool-name myBackEndPool --public-ip-address myPublicIP```
+## 4) Configurar un seguimiento de desempeño para el balanceador de cargas
+```az network lb probe create -g groupname --lb-name loadbalancername --name myHealthProbe --protocol tcp --port 80```
+## 5) Establecer un regla de red en el balanceador de cargas
+```az network lb rule create -g groupname --lb-name loadbalancername -n myLoadBalancerRule --protocol tcp --frontend-port 80 --backend-port 80 --frontend-ip-name myFrontEndPool --backend-pool myBackEndPool  --probe-name myHealthProbe```
+## 6) Crear un red virtual
+```az network vnet create -g groupname -n myVnet --subnet-name mySubnet```
+## 7) Crear un grupo de seguridad en red (NSG)
+```az network nsg create  -g groupname -n myNSG```
+## 8) Establecer un regla de entrada en el grupo de seguridad de red
+```az network nsg rule create -g groupname --nsg-name myNSG --name myNSGRule --priority 1001 --protocol tcp --destination-port-range 80```
+## 9) Crear interfaces de red para cada maquina virtual
+```for i in `seq 1 3`; do ```
+```> az network nic create -g groupname --name myNic$i --vnet-name myVnet --subnet mySubnet --network-security-group myNSG --lb-name loadbalancername --lb-address-pools myBackEndPool```
+```done```
+## 10) Crear conjunto de disponibilidad
+```az vm availability-set create -g platziBalancer --name myAvailabilitySet```
