@@ -32,7 +32,15 @@
 ```az network nsg rule create -g groupname --nsg-name myNSG --name myNSGRule --priority 1001 --protocol tcp --destination-port-range 80```
 ## 9) Crear interfaces de red para cada maquina virtual
 ```for i in `seq 1 3`; do ```
-```> az network nic create -g groupname --name myNic$i --vnet-name myVnet --subnet mySubnet --network-security-group myNSG --lb-name loadbalancername --lb-address-pools myBackEndPool```
+```az network nic create -g groupname --name myNic$i --vnet-name myVnet --subnet mySubnet --network-security-group myNSG --lb-name loadbalancername --lb-address-pools myBackEndPool```
 ```done```
 ## 10) Crear conjunto de disponibilidad
 ```az vm availability-set create -g platziBalancer --name myAvailabilitySet```
+## 11) Crear un archivo de configuracion tipo (cloud-init.txt)
+## 12) Crear maquinas virtuales con configuración inicial
+```for i in `seq 1 3`; do ```
+```az vm create -g groupname --name myVM$i --availability-set myAvailabilitySet --nics myNic$i --image UbuntuLTS --admin-username azureuser --generate-ssh-key --custom-data ./cloud-init.txt --no-wait```
+```done```
+## 13) Obtener la ip del balanceador de cargas
+```az network public-ip show -g PlatziBalancer --name myPublicIP --query [ipAddress] --output tsv```
+## 14) Probar la aplicacion en la direccion IP
